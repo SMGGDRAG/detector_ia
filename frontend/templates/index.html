@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detector de Texto IA vs Humano</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { color: #333; text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+        }
+        textarea:focus { outline: none; border-color: #667eea; }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover { transform: translateY(-2px); }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+        }
+        .result.show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .humano { background: #d4edda; border: 2px solid #28a745; }
+        .ia { background: #f8d7da; border: 2px solid #dc3545; }
+        .veredicto { font-size: 28px; font-weight: bold; text-align: center; margin-bottom: 15px; }
+        .confidence { text-align: center; font-size: 18px; margin-bottom: 20px; }
+        .bar-container {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 30px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+        .feature {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .examples { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+        .example-btn {
+            background: #f0f0f0;
+            color: #333;
+            margin: 5px;
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+        .btn-secondary { background: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Detector de Texto IA vs Humano</h1>
+        <div class="subtitle">Basado en análisis estilométrico y Random Forest</div>
+        
+        <textarea id="textInput" rows="6" placeholder="Pega aquí tu texto (mínimo 50 caracteres)..."></textarea>
+        
+        <div>
+            <button onclick="analyze()">🔬 Analizar Texto</button>
+            <button class="example-btn" onclick="loadExample('human')">📝 Ejemplo Humano</button>
+            <button class="example-btn" onclick="loadExample('ia')">🤖 Ejemplo IA</button>
+            <button class="btn-secondary" onclick="clearText()">🗑️ Limpiar</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function analyze() {
+            const text = document.getElementById('textInput').value;
+            
+            if (text.length < 50) {
+                alert('⚠️ El texto debe tener al menos 50 caracteres');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div style="text-align:center"><div class="spinner"></div><p>Analizando...</p></div>';
+            resultDiv.classList.add('show');
+            
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const isIA = data.is_ia;
+                    const veredictoClass = isIA ? 'ia' : 'humano';
+                    const confidencePercent = data.confidence_percent;
+                    
+                    let featuresHtml = '<div style="margin-top:20px"><h3>🎯 Factores más influyentes:</h3>';
+                    data.top_features.forEach(f => {
+                        featuresHtml += `
+                            <div class="feature">
+                                <strong>${f.name}</strong><br>
+                                Impacto: ${f.impact.toFixed(4)} → Empuja hacia ${f.direction}
+                            </div>
+                        `;
+                    });
+                    featuresHtml += '</div>';
+                    
+                    resultDiv.innerHTML = `
+                        <div class="${veredictoClass}" style="padding:20px; border-radius:12px; text-align:center">
+                            <div class="veredicto">${data.veredicto}</div>
+                            <div class="confidence">Confianza: ${confidencePercent}</div>
+                            <div class="bar-container">
+                                <div class="bar" style="width: ${confidencePercent}">${confidencePercent}</div>
+                            </div>
+                            ${featuresHtml}
+                            <div style="margin-top:15px; padding:10px; background:#e3f2fd; border-radius:8px;">
+                                💡 ${data.message}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div style="color:red">❌ Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div style="color:red">❌ Error de conexión: ${error.message}</div>`;
+            }
+        }
+        
+        function loadExample(type) {
+            const examples = {
+                human: "El cambio climático es uno de los desafíos más complejos que enfrenta la humanidad. No se trata solo de temperaturas que aumentan gradualmente; las consecuencias son mucho más amplias y afectan desde los patrones de migración de especies hasta la seguridad alimentaria global. Personalmente, creo que necesitamos acciones concretas, no solo promesas vacías en conferencias internacionales. A veces me pregunto si nuestras generaciones futuras nos perdonarán por la inacción actual.",
+                ia: "El cambio climático es un fenómeno global causado principalmente por las emisiones de gases de efecto invernadero derivadas de actividades humanas. Sus consecuencias incluyen el aumento de la temperatura media del planeta, el derretimiento de los glaciares, y el incremento de fenómenos meteorológicos extremos. Es fundamental implementar políticas de mitigación y adaptación para reducir los impactos negativos sobre los ecosistemas y las sociedades humanas."
+            };
+            document.getElementById('textInput').value = examples[type];
+        }
+        
+        function clearText() {
+            document.getElementById('textInput').value = '';
+            document.getElementById('result').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

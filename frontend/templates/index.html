@@ -128,7 +128,7 @@
             const text = document.getElementById('textInput').value;
             
             if (text.length < 50) {
-                alert('⚠️ El texto debe tener al menos 50 caracteres');
+                alert(' El texto debe tener al menos 50 caracteres');
                 return;
             }
             
@@ -170,15 +170,15 @@
                             </div>
                             ${featuresHtml}
                             <div style="margin-top:15px; padding:10px; background:#e3f2fd; border-radius:8px;">
-                                💡 ${data.message}
+                                 ${data.message}
                             </div>
                         </div>
                     `;
                 } else {
-                    resultDiv.innerHTML = `<div style="color:red">❌ Error: ${data.error}</div>`;
+                    resultDiv.innerHTML = `<div style="color:red"> Error: ${data.error}</div>`;
                 }
             } catch (error) {
-                resultDiv.innerHTML = `<div style="color:red">❌ Error de conexión: ${error.message}</div>`;
+                resultDiv.innerHTML = `<div style="color:red"> Error de conexión: ${error.message}</div>`;
             }
         }
         

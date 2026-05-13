@@ -10,12 +10,12 @@ def save_trained_model(features_csv="../data/phase2_features.csv", model_path="i
     """
     Guarda el modelo entrenado y el scaler para usarlos después
     """
-    print("💾 Guardando modelo entrenado...")
+    print(" Guardando modelo entrenado...")
     
     # Verificar que existe el archivo
     import os
     if not os.path.exists(features_csv):
-        print(f"❌ Error: No se encontró {features_csv}")
+        print(f" Error: No se encontró {features_csv}")
         print("   Ejecuta primero las Fases 1 y 2 para generar este archivo")
         return None
     
@@ -25,8 +25,8 @@ def save_trained_model(features_csv="../data/phase2_features.csv", model_path="i
     X = df[feature_cols]
     y = df['is_ia']
     
-    print(f"📊 Datos: {len(X)} muestras, {len(feature_cols)} features")
-    print(f"📊 Balance: Humano={sum(y==0)}, IA={sum(y==1)}")
+    print(f" Datos: {len(X)} muestras, {len(feature_cols)} features")
+    print(f" Balance: Humano={sum(y==0)}, IA={sum(y==1)}")
     
     # Entrenar
     scaler = StandardScaler()
@@ -52,11 +52,11 @@ def save_trained_model(features_csv="../data/phase2_features.csv", model_path="i
     with open(model_path, 'wb') as f:
         pickle.dump(model_data, f)
     
-    print(f"✅ Modelo guardado en {model_path}")
-    print(f"📊 Precisión en entrenamiento: {model.score(X_scaled, y):.4f}")
+    print(f" Modelo guardado en {model_path}")
+    print(f" Precisión en entrenamiento: {model.score(X_scaled, y):.4f}")
     
     # Mostrar feature importance
-    print("\n📈 Importancia de features:")
+    print("\n Importancia de features:")
     importance = dict(zip(feature_cols, model.feature_importances_))
     for feat, imp in sorted(importance.items(), key=lambda x: x[1], reverse=True)[:5]:
         print(f"   {feat}: {imp:.4f}")

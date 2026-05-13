@@ -121,7 +121,7 @@ class IAClassifier:
         
     def load_model(self):
         if not os.path.exists(self.model_path):
-            print(f"⚠️ No se encontró {self.model_path}")
+            print(f" No se encontró {self.model_path}")
             print("Ejecuta primero: python backend/train_model.py")
             return False
         
@@ -133,10 +133,10 @@ class IAClassifier:
             self.scaler = model_data['scaler']
             self.feature_cols = model_data['feature_cols']
             self.is_loaded = True
-            print(f"✅ Modelo cargado: {self.model_path}")
+            print(f" Modelo cargado: {self.model_path}")
             return True
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f" Error: {e}")
             return False
     
     def predict(self, text):
@@ -178,11 +178,11 @@ classifier = IAClassifier()
 
 def get_message(prediction, confidence):
     if prediction == 1 and confidence > 0.8:
-        return "⚠️ Alta probabilidad de IA. Texto con estructura uniforme y vocabulario predecible."
+        return " Alta probabilidad de IA. Texto con estructura uniforme y vocabulario predecible."
     elif prediction == 0 and confidence > 0.8:
-        return "✅ Muy probablemente humano. Texto con variabilidad natural."
+        return " Muy probablemente humano. Texto con variabilidad natural."
     else:
-        return "📝 Caso ambiguo. El texto tiene características mixtas."
+        return " Caso ambiguo. El texto tiene características mixtas."
 
 # ============================================================
 # ENDPOINTS
@@ -213,7 +213,7 @@ def predict():
         return jsonify({
             'success': True,
             'is_ia': bool(prediction),
-            'veredicto': '🤖 IA GENERADO' if prediction == 1 else '👤 HUMANO',
+            'veredicto': ' IA GENERADO' if prediction == 1 else '👤 HUMANO',
             'confidence': float(confidence),
             'confidence_percent': f"{confidence*100:.1f}%",
             'top_features': features,
@@ -225,8 +225,8 @@ def predict():
 
 if __name__ == '__main__':
     print("="*50)
-    print("🔍 DETECTOR DE IA - SERVIDOR")
+    print(" DETECTOR DE IA - SERVIDOR")
     print("="*50)
-    print("🚀 Iniciando en http://localhost:5000")
+    print(" Iniciando en http://localhost:5000")
     print("="*50)
     app.run(debug=True, host='0.0.0.0', port=5000)

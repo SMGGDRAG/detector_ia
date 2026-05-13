@@ -24,12 +24,12 @@ class ModelTrainer:
         Carga el CSV de DAIGT-v2 y prepara las features estilométricas
         """
         print("="*60)
-        print("📂 CARGANDO DATASET DAIGT-v2")
+        print(" CARGANDO DATASET DAIGT-v2")
         print("="*60)
         
         if not os.path.exists(self.data_path):
             raise FileNotFoundError(f"""
-            ❌ No se encontró el archivo: {self.data_path}
+             No se encontró el archivo: {self.data_path}
             
             Por favor, asegúrate de que:
             1. El archivo train_v2_drcat_02.csv esté en la carpeta 'data/'
@@ -38,8 +38,8 @@ class ModelTrainer:
         
         # Cargar CSV
         df = pd.read_csv(self.data_path)
-        print(f"✅ Archivo cargado: {len(df)} filas")
-        print(f"📊 Columnas disponibles: {list(df.columns)}")
+        print(f" Archivo cargado: {len(df)} filas")
+        print(f" Columnas disponibles: {list(df.columns)}")
         
         # Identificar columnas de texto y etiqueta
         text_col = None
@@ -58,15 +58,15 @@ class ModelTrainer:
                 break
         
         if text_col is None:
-            print(f"⚠️ Columnas disponibles: {list(df.columns)}")
+            print(f" Columnas disponibles: {list(df.columns)}")
             raise ValueError("No se encontró una columna de texto. Usa una de estas: 'text', 'content', 'essay'")
         
         if label_col is None:
-            print(f"⚠️ Columnas disponibles: {list(df.columns)}")
+            print(f" Columnas disponibles: {list(df.columns)}")
             raise ValueError("No se encontró una columna de etiqueta. Usa una de estas: 'label', 'is_ia', 'generated'")
         
-        print(f"📝 Usando texto de: '{text_col}'")
-        print(f"🏷️ Usando etiqueta de: '{label_col}'")
+        print(f" Usando texto de: '{text_col}'")
+        print(f" Usando etiqueta de: '{label_col}'")
         
         # Crear DataFrame con columnas estandarizadas
         df_clean = pd.DataFrame()
@@ -82,7 +82,7 @@ class ModelTrainer:
         else:
             # Intentar inferir
             unique_vals = df[label_col].unique()
-            print(f"📊 Valores únicos en etiqueta: {unique_vals}")
+            print(f" Valores únicos en etiqueta: {unique_vals}")
             
             if len(unique_vals) == 2:
                 # Mapear los valores a 0 y 1
@@ -93,7 +93,7 @@ class ModelTrainer:
         
         # Filtrar textos demasiado cortos
         df_clean['word_count'] = df_clean['text'].apply(lambda x: len(str(x).split()))
-        print(f"📊 Distribución de longitud de textos:")
+        print(f" Distribución de longitud de textos:")
         print(f"   Media: {df_clean['word_count'].mean():.0f} palabras")
         print(f"   Min: {df_clean['word_count'].min()} palabras")
         print(f"   Max: {df_clean['word_count'].max()} palabras")
@@ -101,13 +101,13 @@ class ModelTrainer:
         # Eliminar textos muy cortos (menos de 50 palabras)
         min_words = 50
         df_filtered = df_clean[df_clean['word_count'] >= min_words].copy()
-        print(f"\n✂️ Filtrados textos con menos de {min_words} palabras:")
+        print(f"\n Filtrados textos con menos de {min_words} palabras:")
         print(f"   Antes: {len(df_clean)} textos")
         print(f"   Después: {len(df_filtered)} textos")
         print(f"   Eliminados: {len(df_clean) - len(df_filtered)} textos")
         
         # Ver balance de clases
-        print(f"\n📊 Balance de clases después del filtrado:")
+        print(f"\n Balance de clases después del filtrado:")
         n_human = sum(df_filtered['is_ia'] == 0)
         n_ia = sum(df_filtered['is_ia'] == 1)
         print(f"   Humano (0): {n_human} ({n_human/len(df_filtered)*100:.1f}%)")
@@ -115,7 +115,7 @@ class ModelTrainer:
         
         # Balancear si es necesario
         if abs(n_human - n_ia) / len(df_filtered) > 0.2:
-            print("\n⚖️ Balanceando clases...")
+            print("\n Balanceando clases...")
             min_samples = min(n_human, n_ia)
             df_human = df_filtered[df_filtered['is_ia'] == 0].sample(n=min_samples, random_state=42)
             df_ia = df_filtered[df_filtered['is_ia'] == 1].sample(n=min_samples, random_state=42)
@@ -164,7 +164,12 @@ class ModelTrainer:
                 stops = set(stopwords.words('english'))
                 non_stop = [w for w in words if w.lower() not in stops]
                 unique = set(w.lower() for w in words)
-                
+                #======================================================================
+                #En un modelo de clasificación (por ejemplo, Random Forest, XGBoost, etc.) 
+                # que distingue entre texto escrito por humano vs. IA, el feature_importance 
+                # indica cuánto contribuye cada característica a la decisión final.
+                #=====================================================================
+
                 # Feature 1: Densidad léxica
                 lexical_density = len(non_stop) / len(words) if len(words) > 0 else 0
                 
@@ -237,12 +242,12 @@ class ModelTrainer:
                 print(f"   Procesados {idx + 1} textos...")
         
         features_df = pd.DataFrame(features_list)
-        print(f"\n✅ Features extraídas: {len(features_df)} textos válidos")
-        print(f"📊 Eliminados: {len(df) - len(features_df)} textos (muy cortos o error)")
+        print(f"\n Features extraídas: {len(features_df)} textos válidos")
+        print(f" Eliminados: {len(df) - len(features_df)} textos (muy cortos o error)")
         
         # Guardar features para uso futuro
         features_df.to_csv('data/phase2_features.csv', index=False)
-        print(f"💾 Features guardadas en: data/phase2_features.csv")
+        print(f" Features guardadas en: data/phase2_features.csv")
         
         return features_df
     
@@ -255,7 +260,7 @@ class ModelTrainer:
         features_df = self.extract_features_from_texts(df)
         
         if len(features_df) < 100:
-            print("⚠️ Pocos datos válidos. Usando datos sintéticos...")
+            print(" Pocos datos válidos. Usando datos sintéticos...")
             return self.train_synthetic()
         
         # Preparar X y y
@@ -263,7 +268,7 @@ class ModelTrainer:
         y = features_df['is_ia']
         
         print("\n" + "="*60)
-        print("🎯 ENTRENANDO MODELO")
+        print(" ENTRENANDO MODELO")
         print("="*60)
         
         # Escalar features
@@ -289,16 +294,16 @@ class ModelTrainer:
         y_pred = self.model.predict(X_test)
         y_proba = self.model.predict_proba(X_test)[:, 1]
         
-        print(f"\n📊 Resultados en conjunto de prueba:")
+        print(f"\n Resultados en conjunto de prueba:")
         print(f"   Accuracy: {accuracy_score(y_test, y_pred):.4f}")
         print(f"   F1-Score: {f1_score(y_test, y_pred):.4f}")
         print(f"   AUC-ROC: {roc_auc_score(y_test, y_proba):.4f}")
         
-        print(f"\n📈 Classification Report:")
+        print(f"\n Classification Report:")
         print(classification_report(y_test, y_pred, target_names=['Humano', 'IA']))
         
         # Feature importance
-        print(f"\n🎯 Top 5 features más importantes:")
+        print(f"\n Top 5 features más importantes:")
         importance = dict(zip(self.feature_cols, self.model.feature_importances_))
         for feat, imp in sorted(importance.items(), key=lambda x: x[1], reverse=True)[:5]:
             print(f"   {feat}: {imp:.4f}")
@@ -307,7 +312,7 @@ class ModelTrainer:
     
     def train_synthetic(self):
         """Fallback: entrenar con datos sintéticos"""
-        print("\n📊 Generando datos sintéticos...")
+        print("\n Generando datos sintéticos...")
         
         np.random.seed(42)
         n_samples = 2000
@@ -361,7 +366,7 @@ class ModelTrainer:
         self.model = RandomForestClassifier(n_estimators=200, max_depth=10, random_state=42)
         self.model.fit(X_scaled, y)
         
-        print(f"✅ Modelo entrenado con datos sintéticos")
+        print(f" Modelo entrenado con datos sintéticos")
         return self.model
     
     def save_model(self):
@@ -381,14 +386,14 @@ class ModelTrainer:
         with open(self.model_path, 'wb') as f:
             pickle.dump(model_data, f)
         
-        print(f"\n💾 Modelo guardado en: {self.model_path}")
+        print(f"\n Modelo guardado en: {self.model_path}")
         return self.model_path
 
 def main():
     print("="*60)
-    print("🚀 ENTRENAMIENTO DE MODELO DETECTOR DE IA")
+    print(" ENTRENAMIENTO DE MODELO DETECTOR DE IA")
     print("="*60)
-    print("\n📁 Buscando archivo en: data/train_v2_drcat_02.csv")
+    print("\n Buscando archivo en: data/train_v2_drcat_02.csv")
     
     trainer = ModelTrainer(data_path="data/train_v2_drcat_02.csv")
     
@@ -396,12 +401,12 @@ def main():
         trainer.train()
         trainer.save_model()
         print("\n" + "="*60)
-        print("✅ ENTRENAMIENTO COMPLETADO EXITOSAMENTE")
+        print(" ENTRENAMIENTO COMPLETADO EXITOSAMENTE")
         print("="*60)
-        print("\n👉 Ahora ejecuta: python backend/app.py")
+        print("\n Ahora ejecuta: python backend/app.py")
     except Exception as e:
-        print(f"\n❌ Error: {e}")
-        print("\n📝 Soluciones posibles:")
+        print(f"\n Error: {e}")
+        print("\n Soluciones posibles:")
         print("1. Verifica que el archivo esté en: data/train_v2_drcat_02.csv")
         print("2. Revisa que las columnas del CSV se llamen 'text' y 'label'")
         print("3. Si las columnas tienen otros nombres, modifica el código")

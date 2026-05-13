@@ -114,10 +114,10 @@
         <textarea id="textInput" rows="6" placeholder="Pega aquí tu texto (mínimo 50 caracteres)..."></textarea>
         
         <div>
-            <button onclick="analyze()">🔬 Analizar Texto</button>
-            <button class="example-btn" onclick="loadExample('human')">📝 Ejemplo Humano</button>
-            <button class="example-btn" onclick="loadExample('ia')">🤖 Ejemplo IA</button>
-            <button class="btn-secondary" onclick="clearText()">🗑️ Limpiar</button>
+            <button onclick="analyze()"> Analizar Texto</button>
+            <button class="example-btn" onclick="loadExample('human')"> Ejemplo Humano</button>
+            <button class="example-btn" onclick="loadExample('ia')"> Ejemplo IA</button>
+            <button class="btn-secondary" onclick="clearText()"> Limpiar</button>
         </div>
         
         <div id="result" class="result"></div>
@@ -183,13 +183,14 @@
         }
         
         function loadExample(type) {
-            const examples = {
-                human: "El cambio climático es uno de los desafíos más complejos que enfrenta la humanidad. No se trata solo de temperaturas que aumentan gradualmente; las consecuencias son mucho más amplias y afectan desde los patrones de migración de especies hasta la seguridad alimentaria global. Personalmente, creo que necesitamos acciones concretas, no solo promesas vacías en conferencias internacionales. A veces me pregunto si nuestras generaciones futuras nos perdonarán por la inacción actual.",
-                ia: "El cambio climático es un fenómeno global causado principalmente por las emisiones de gases de efecto invernadero derivadas de actividades humanas. Sus consecuencias incluyen el aumento de la temperatura media del planeta, el derretimiento de los glaciares, y el incremento de fenómenos meteorológicos extremos. Es fundamental implementar políticas de mitigación y adaptación para reducir los impactos negativos sobre los ecosistemas y las sociedades humanas."
-            };
-            document.getElementById('textInput').value = examples[type];
-        }
+    const examples = {
+        human: "Phones. Modern humans today are always on their phone. They are always on their phone more than 5 hours a day no stop. All they do is text back and forward and just have group chats on social media. They even do it while driving. There are some really bad consequences when stuff happens when it comes to a phone. Some certain areas in the United States ban phones from class rooms just because of it. When people have phones, they know about certain apps that they have. Apps like Facebook, Twitter, Instagram and Snapchat. So if a friend moves away and you want to be in contact, you can still be in contact by posting videos or text messages. People always have different ways to communicate with a phone. Phones have changed due to our generation. Driving is one of the ways to get around. People always be on their phones while doing it, which can cause serious problems. That's why there's a thing called no texting while driving. That's a really important thing to remember. Some people still do it because they think it's stupid. No matter what, they still have to obey it because that's the only way to stay safe. Sometimes on the news there is either an accident or a suicide. It might involve someone not looking where they're going or a tweet that someone sent. It results in either injury or death. If a mysterious number says 'I'm going to kill you' and they know where you live but you don't know the person's contact, it makes you puzzled and makes you start to freak out, which can end up really badly. Phones are fine to use and it's also the best way to get help. If you go through a problem and you can't find help, you always have a phone there with you. Even though phones are used almost every day, as long as you're safe it would come into use if you get into trouble. Make sure you do not use your phone while you're in the middle of driving. The news is always updated when people do something stupid that involves their phones. The safest way is the best way to stay safe.",
         
+        ia: "El cambio climático es un fenómeno global causado principalmente por las emisiones de gases de efecto invernadero derivadas de actividades humanas. Sus consecuencias incluyen el aumento de la temperatura media del planeta, el derretimiento de los glaciares, y el incremento de fenómenos meteorológicos extremos. Es fundamental implementar políticas de mitigación y adaptación para reducir los impactos negativos sobre los ecosistemas y las sociedades humanas."
+    };
+    
+    document.getElementById('textInput').value = examples[type];
+}
         function clearText() {
             document.getElementById('textInput').value = '';
             document.getElementById('result').classList.remove('show');
